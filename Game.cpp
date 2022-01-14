@@ -1,15 +1,17 @@
-#include <string>
+﻿#include <string>
 #include "Game.h"
+
+constexpr char ESC = 0x1b;
 
 void Game::addColorRow(string guess) {
     vector<unsigned int> nonmatchingLetterIndices;
-    vector<Color> colorRow(wordLength, red);
+    vector<Color> colorRow(wordLength, Color::gray);
     unsigned int matchedLetterFrequencies[256] = {};
 
     for (unsigned int i = 0; i < wordLength; i++) {
         if (guess[i] == word[i]) {
             matchedLetterFrequencies[guess[i]]++;
-            colorRow[i] = green;
+            colorRow[i] = Color::green;
         }
         else {
             nonmatchingLetterIndices.push_back(i);
@@ -20,7 +22,7 @@ void Game::addColorRow(string guess) {
         const char letter = guess[i];
         if (letterFrequencies[letter] - matchedLetterFrequencies[letter] > 0) {
             matchedLetterFrequencies[letter]++;
-            colorRow[i] = yellow;
+            colorRow[i] = Color::orange;
         }
     }
 
@@ -46,26 +48,79 @@ bool Game::confirmGuess(string guess) {
     return guess == word;
 }
 
-void Game::printGame(string partialGuess) {
-    // TODO: replace with fancier graphics
-    for (unsigned int i = 0; i < guessCount; i++) {
-        for (unsigned int j = 0; j < wordLength; j++) {
-            cout << guesses[i][j];
-            switch (tileColors[i][j]) {
-            case red:
-                cout << '.'; break;
-            case yellow:
-                cout << '?'; break;
-            case green:
-                cout << '!'; break;
-            }
-            cout << ' ';
-        }
-        cout << endl;
+void setConsoleColors(Color c) {
+    cout << ESC << "[48;5;";
+    switch (c) {
+    case Color::gray:
+        cout << "242m"; break;
+    case Color::orange:
+        cout << "172m"; break;
+    case Color::green:
+        cout << "40m"; break;
     }
 
-    for (unsigned int i = 0; i < maxGuesses - guessCount; i++) {
-        for (unsigned int j = 0; j < wordLength; j++) cout << "__ ";
-        cout << endl;
+    // Make foreground white
+    cout << ESC << "[38;5;15m";
+}
+
+void resetConsoleColors() {
+    cout << ESC << "[0m";
+}
+
+void Game::printGame(string partialGuess) {
+    cout << '\xC9';
+    for (unsigned int i = 0; i < wordLength; i++) {
+        cout << "\xCD\xCD\xCD\xCD\xCD\xCD\xCD";
+        if (i != wordLength - 1) cout << '\xCB';
+    }
+    cout << '\xBB' << endl;
+    for (unsigned int i = 0; i < maxGuesses; i++) {
+        for (unsigned int j = 0; j < wordLength; j++) {
+            cout << '\xBA';
+            if (i < guessCount) setConsoleColors(tileColors[i][j]);
+            cout << "       ";
+            resetConsoleColors();
+        }
+        cout << '\xBA' << endl;
+        for (unsigned int j = 0; j < wordLength; j++) {
+            cout << '\xBA';
+            if (i < guessCount) {
+                setConsoleColors(tileColors[i][j]);
+                cout << "   " << guesses[i][j] << "   ";
+                resetConsoleColors();
+            }
+            else if (i == guessCount && j < partialGuess.length()) {
+                cout << "   " << partialGuess[j] << "   ";
+            }
+            else {
+                cout << "       ";
+            }
+        }
+        cout << '\xBA' << endl;
+        for (unsigned int j = 0; j < wordLength; j++) {
+            cout << '\xBA';
+            if (i < guessCount) setConsoleColors(tileColors[i][j]);
+            cout << "       ";
+            resetConsoleColors();
+        }
+        cout << '\xBA' << endl;
+        if (i == maxGuesses - 1) {
+            cout << '\xC8';
+            for (unsigned int i = 0; i < wordLength; i++) {
+                cout << "\xCD\xCD\xCD\xCD\xCD\xCD\xCD";
+                if (i != wordLength - 1) cout << '\xCA';
+            }
+            cout << '\xBC' << endl;
+        }
+        else {
+            cout << '\xCC';
+            for (unsigned int i = 0; i < wordLength; i++) {
+                cout << "\xCD\xCD\xCD\xCD\xCD\xCD\xCD";
+                if (i != wordLength - 1) cout << '\xCE';
+            }
+            cout << '\xB9' << endl;
+        }
     }
 }
+
+

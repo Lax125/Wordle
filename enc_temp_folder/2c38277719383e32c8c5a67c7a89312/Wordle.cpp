@@ -64,10 +64,6 @@ void hideConsoleCursor() {
 	std::cout << "\033[?25l";
 }
 
-void showConsoleCursor() {
-	std::cout << "\033[?25h";
-}
-
 int main() {
 	enableVirtualTerminalProcessing();
 	hideConsoleCursor();
@@ -92,7 +88,6 @@ int main() {
 			if (game.confirmGuess(nextGuess)) {
 				game.printGame("");
 				cout << "You win!";
-				showConsoleCursor();
 				return EXIT_SUCCESS;
 			}
 			nextGuess.clear();
@@ -101,6 +96,5 @@ int main() {
 	consoleCursorToHome();
 	game.printGame(nextGuess);
 	std::cout << "You lost. The word was " << secretWord << '.';
-	showConsoleCursor();
 	return EXIT_SUCCESS;
 }

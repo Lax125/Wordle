@@ -5,7 +5,7 @@
 #include <iostream>
 using namespace std;
 
-enum Color {red, yellow, green};
+enum class Color {gray, orange, green};
 
 class Game {
 private:
