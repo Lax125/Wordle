@@ -139,11 +139,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="consoleUtils.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="randUtils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="consoleUtils.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Wordle.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="dictionary.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

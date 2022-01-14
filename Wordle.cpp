@@ -1,88 +1,44 @@
-#include <windows.h>
+
 #include <conio.h>
+#include <iostream>
+#include <fstream>
 #include "Game.h"
-
-void clearConsole() {
-	HANDLE                     hStdOut;
-	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	DWORD                      count;
-	DWORD                      cellCount;
-	COORD                      homeCoords = { 0, 0 };
-
-	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (hStdOut == INVALID_HANDLE_VALUE) return;
-
-	/* Get the number of cells in the current buffer */
-	if (!GetConsoleScreenBufferInfo(hStdOut, &csbi)) return;
-	cellCount = csbi.dwSize.X * csbi.dwSize.Y;
-
-	/* Fill the entire buffer with spaces */
-	if (!FillConsoleOutputCharacter(
-		hStdOut,
-		(TCHAR)' ',
-		cellCount,
-		homeCoords,
-		&count
-	)) return;
-
-	/* Fill the entire buffer with the current colors and attributes */
-	if (!FillConsoleOutputAttribute(
-		hStdOut,
-		csbi.wAttributes,
-		cellCount,
-		homeCoords,
-		&count
-	)) return;
-
-	/* Move the cursor home */
-	SetConsoleCursorPosition(hStdOut, homeCoords);
-}
-
-void enableVirtualTerminalProcessing() {
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	DWORD consoleMode;
-	GetConsoleMode(hConsole, &consoleMode);
-	consoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-	SetConsoleMode(hConsole, consoleMode);
-}
-
-void consoleCursorToHome() {
-	HANDLE                     hStdOut;
-	COORD                      homeCoords = { 0, 0 };
-
-	hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-	if (hStdOut == INVALID_HANDLE_VALUE) return;
-
-	SetConsoleCursorPosition(hStdOut, homeCoords);
-}
-
-void disableSync() {
-	std::ios_base::sync_with_stdio(false);
-}
-
-void hideConsoleCursor() {
-	std::cout << "\033[?25l";
-}
-
-void showConsoleCursor() {
-	std::cout << "\033[?25h";
-}
+#include "consoleUtils.h"
+#include "randUtils.h"
 
 int main() {
 	enableVirtualTerminalProcessing();
 	hideConsoleCursor();
 	clearConsole();
 
-	string secretWord = "PANDA";
+	const unsigned int desiredWordLength = 5;
+	ifstream dictionaryFile("dictionary.txt");
+	string word;
+	vector<string> validWords;
+	while (getline(dictionaryFile, word)) {
+		if (word.length() == desiredWordLength) validWords.push_back(word);
+	}
+	string secretWord = *select_randomly(validWords.begin(), validWords.end());
 	Game game(secretWord, 6);
 	string nextGuess;
+	bool validGuess = false;
 	while (game.guessCount < game.maxGuesses) {
 		consoleCursorToHome();
 		game.printGame(nextGuess);
+		if (nextGuess.length() == game.wordLength && !validGuess) {
+			cout << nextGuess << " is not a valid word." << endl;
+		}
+		else {
+			for (unsigned int i = 0; i < 21 + game.wordLength; i++) cout << ' ';
+			cout << endl;
+		}
 		int key = _getch();
 		if (key == 3 || key == 27) break;
 		else if (key >= 97 && key < 123 && nextGuess.length() < game.wordLength) {
 			nextGuess += (char)(key - 32);
+			if (nextGuess.length() == game.wordLength) {
+				validGuess = find(validWords.begin(), validWords.end(), nextGuess) != validWords.end();
+			}
 			continue;
 		}
 		else if (key == 8 && nextGuess.length() > 0) {
@@ -91,7 +47,7 @@ int main() {
 		else if (key == 13 && nextGuess.length() == game.wordLength) {
 			if (game.confirmGuess(nextGuess)) {
 				game.printGame("");
-				cout << "You win!";
+				cout << "You guessed the secret word, " << secretWord << "! You win!" << endl;
 				showConsoleCursor();
 				return EXIT_SUCCESS;
 			}

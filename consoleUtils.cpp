@@ -1,6 +1,7 @@
 #include <windows.h>
-#include <conio.h>
-#include "Game.h"
+#include <iostream>
+#include "consoleUtils.h"
+using namespace std;
 
 void clearConsole() {
 	HANDLE                     hStdOut;
@@ -64,37 +65,6 @@ void hideConsoleCursor() {
 	std::cout << "\033[?25l";
 }
 
-int main() {
-	enableVirtualTerminalProcessing();
-	hideConsoleCursor();
-	clearConsole();
-
-	string secretWord = "PANDA";
-	Game game(secretWord, 6);
-	string nextGuess;
-	while (game.guessCount < game.maxGuesses) {
-		consoleCursorToHome();
-		game.printGame(nextGuess);
-		int key = _getch();
-		if (key == 3 || key == 27) break;
-		else if (key >= 97 && key < 123 && nextGuess.length() < game.wordLength) {
-			nextGuess += (char)(key - 32);
-			continue;
-		}
-		else if (key == 8 && nextGuess.length() > 0) {
-			nextGuess.pop_back();
-		}
-		else if (key == 13 && nextGuess.length() == game.wordLength) {
-			if (game.confirmGuess(nextGuess)) {
-				game.printGame("");
-				cout << "You win!";
-				return EXIT_SUCCESS;
-			}
-			nextGuess.clear();
-		}
-	}
-	consoleCursorToHome();
-	game.printGame(nextGuess);
-	std::cout << "You lost. The word was " << secretWord << '.';
-	return EXIT_SUCCESS;
+void showConsoleCursor() {
+	std::cout << "\033[?25h";
 }
