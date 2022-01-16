@@ -7,12 +7,12 @@
 #include "randUtils.h"
 
 int main() {
-	enableVirtualTerminalProcessing();
-	hideConsoleCursor();
-	clearConsole();
-
 	const unsigned int desiredWordLength = 5;
 	ifstream dictionaryFile("dictionary.txt");
+	if (!dictionaryFile.is_open()) {
+		cerr << "Missing dictionary.txt!" << endl;
+		return EXIT_FAILURE;
+	}
 	string word;
 	vector<string> validWords;
 	while (getline(dictionaryFile, word)) {
@@ -22,6 +22,10 @@ int main() {
 	Game game(secretWord, 6);
 	string nextGuess;
 	bool validGuess = false;
+
+	hideConsoleCursor();
+	clearConsole();
+
 	while (game.guessCount < game.maxGuesses) {
 		consoleCursorToHome();
 		game.printGame(nextGuess);
@@ -46,6 +50,7 @@ int main() {
 		}
 		else if (key == 13 && nextGuess.length() == game.wordLength) {
 			if (game.confirmGuess(nextGuess)) {
+				consoleCursorToHome();
 				game.printGame("");
 				cout << "You guessed the secret word, " << secretWord << "! You win!" << endl;
 				showConsoleCursor();
@@ -54,6 +59,7 @@ int main() {
 			nextGuess.clear();
 		}
 	}
+
 	consoleCursorToHome();
 	game.printGame(nextGuess);
 	std::cout << "You lost. The word was " << secretWord << '.';

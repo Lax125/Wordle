@@ -89,8 +89,17 @@ void Game::printGame(string partialGuess) {
                 cout << "   " << guesses[i][j] << "   ";
                 resetConsoleColors();
             }
-            else if (i == guessCount && j < partialGuess.length()) {
-                cout << "   " << partialGuess[j] << "   ";
+            else if (i == guessCount) {
+                cout << "   ";
+                if (j == partialGuess.length() || j == wordLength - 1 && partialGuess.length() == wordLength) {
+                    cout << ESC << "[4m";
+                }
+                if (j < partialGuess.length())
+                    cout << partialGuess[j];
+                else
+                    cout << ' ';
+                cout << ESC << "[24m";
+                cout << "   ";
             }
             else {
                 cout << "       ";
