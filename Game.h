@@ -3,18 +3,16 @@
 #include <string>
 #include <ostream>
 #include <iostream>
+#include "Keyboard.h"
+#include "Color.h"
 using namespace std;
-
-enum class Color {gray, orange, green};
 
 class Game {
 private:
 	vector<string> guesses;
 	vector<vector<Color>> tileColors;
 	const string word;
-	unsigned int letterFrequencies[256] = {};
-
-	void addColorRow(string);
+	Keyboard keyboard;
 
 public:
 	const unsigned int wordLength;

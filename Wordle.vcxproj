@@ -139,13 +139,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Color.h" />
     <ClInclude Include="consoleUtils.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Keyboard.h" />
     <ClInclude Include="randUtils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Color.cpp" />
     <ClCompile Include="consoleUtils.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Wordle.cpp" />
   </ItemGroup>
   <ItemGroup>

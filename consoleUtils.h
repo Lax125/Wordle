@@ -2,8 +2,6 @@
 
 void clearConsole();
 
-void enableVirtualTerminalProcessing();
-
 void consoleCursorToHome();
 
 void disableSync();

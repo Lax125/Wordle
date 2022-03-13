@@ -48,7 +48,7 @@ int main() {
 		else if (key == 8 && nextGuess.length() > 0) {
 			nextGuess.pop_back();
 		}
-		else if (key == 13 && nextGuess.length() == game.wordLength) {
+		else if (key == 13 && nextGuess.length() == game.wordLength && validGuess) {
 			if (game.confirmGuess(nextGuess)) {
 				consoleCursorToHome();
 				game.printGame("");
